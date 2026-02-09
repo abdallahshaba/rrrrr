@@ -2,7 +2,6 @@ import 'package:dbt_mental_health_app/config/routes_config.dart';
 import 'package:dbt_mental_health_app/config/theme_config.dart';
 import 'package:dbt_mental_health_app/controllers/theme_controller.dart';
 import 'package:dbt_mental_health_app/services/database_service.dart';
-import 'package:dbt_mental_health_app/services/notification_service.dart';
 import 'package:dbt_mental_health_app/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

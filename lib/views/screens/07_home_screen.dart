@@ -1,10 +1,10 @@
-import 'package:dbt_mental_health_app/config/routes_config.dart';
 import 'package:dbt_mental_health_app/views/widgets/custom_card.dart';
 import 'package:dbt_mental_health_app/views/widgets/mood_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../config/routes_config.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 
@@ -45,6 +45,8 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _buildActiveGoals(context, homeController),
               const SizedBox(height: 16),
+              _buildRecentDiaryEntries(context, homeController),
+              const SizedBox(height: 16),
               _buildRecentMoods(context, homeController),
             ],
           ),
@@ -72,9 +74,16 @@ class HomeScreen extends StatelessWidget {
                       AppConstants.moodEmojis[controller.todayMood.value - 1],
                       style: const TextStyle(fontSize: 64),
                     ),
+                    const SizedBox(height: 8),
                     Text(
                       AppConstants.moodLabels[controller.todayMood.value - 1],
                       style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton.icon(
+                      onPressed: () => _showMoodDialog(context, controller),
+                      icon: const Icon(Icons.edit),
+                      label: const Text('تحديث المزاج'),
                     ),
                   ],
                 )
@@ -97,57 +106,54 @@ class HomeScreen extends StatelessWidget {
       {'icon': Icons.flag, 'label': 'الأهداف', 'route': RoutesConfig.goals, 'color': Colors.green},
     ];
 
-    return SizedBox(
-      height: 170,
-      child: CustomCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'إجراءات سريعة',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return CustomCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'إجراءات سريعة',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 14),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 4,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              children: actions.map((action) {
-                return InkWell(
-                  onTap: () => Get.toNamed(action['route'] as String),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: (action['color'] as Color).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          action['icon'] as IconData,
-                          color: action['color'] as Color,
-                          size: 28,
-                        ),
+          ),
+          const SizedBox(height: 16),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            children: actions.map((action) {
+              return InkWell(
+                onTap: () => Get.toNamed(action['route'] as String),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: (action['color'] as Color).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        action['label'] as String,
-                        style: const TextStyle(fontSize: 12),
-                        textAlign: TextAlign.center,
+                      child: Icon(
+                        action['icon'] as IconData,
+                        color: action['color'] as Color,
+                        size: 28,
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      action['label'] as String,
+                      style: const TextStyle(fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -158,30 +164,81 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'إحصائيات اليوم',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            'الإحصائيات',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          Row(
+          Obx(() => Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem(Icons.mood, 'المزاج', controller.todayMood.value.toString()),
-              _buildStatItem(Icons.book, 'اليوميات', '2'),
-              _buildStatItem(Icons.check, 'المهارات', '3'),
+              _buildStatBox(
+                'متوسط المزاج',
+                controller.averageMood.value > 0 
+                    ? controller.averageMood.value.toStringAsFixed(1)
+                    : '-',
+                Icons.mood,
+                Helpers.getMoodColor(controller.averageMood.value.toInt()),
+              ),
+              _buildStatBox(
+                'اليوميات',
+                controller.totalDiaryEntries.value.toString(),
+                Icons.book,
+                Colors.green,
+              ),
+              _buildStatBox(
+                'الأهداف',
+                '${controller.completedGoalsCount.value}/${controller.totalGoalsCount.value}',
+                Icons.flag,
+                Colors.orange,
+              ),
             ],
-          ),
+          )),
+          const SizedBox(height: 16),
+          // Progress bar للأهداف
+          Obx(() {
+            if (controller.totalGoalsCount.value > 0) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'تقدم الأهداف',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                      Text(
+                        '${controller.goalsCompletionPercentage.toStringAsFixed(0)}%',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(
+                    value: controller.goalsCompletionPercentage / 100,
+                    backgroundColor: Colors.grey[200],
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                ],
+              );
+            }
+            return const SizedBox.shrink();
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(IconData icon, String label, String value) {
+  Widget _buildStatBox(String label, String value, IconData icon, Color color) {
     return Column(
       children: [
-        Icon(icon, size: 32, color: Colors.blue),
+        Icon(icon, size: 32, color: color),
         const SizedBox(height: 8),
         Text(
           value,
@@ -196,6 +253,7 @@ class HomeScreen extends StatelessWidget {
             fontSize: 12,
             color: Colors.grey[600],
           ),
+          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -225,18 +283,63 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Obx(() {
             if (controller.activeGoals.isEmpty) {
-              return const Text('لا توجد أهداف نشطة');
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.flag_outlined, size: 48, color: Colors.grey[400]),
+                      const SizedBox(height: 8),
+                      Text(
+                        'لا توجد أهداف نشطة',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => Get.toNamed(RoutesConfig.goals),
+                        icon: const Icon(Icons.add),
+                        label: const Text('إضافة هدف'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             }
 
             return Column(
               children: controller.activeGoals.take(3).map((goal) {
-                return ListTile(
-                  leading: const Icon(Icons.flag),
-                  title: Text(goal.title),
-                  subtitle: LinearProgressIndicator(
-                    value: goal.progress / 100,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              goal.title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '${goal.progress}%',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: goal.progress / 100,
+                        backgroundColor: Colors.grey[200],
+                      ),
+                    ],
                   ),
-                  trailing: Text('${goal.progress}%'),
                 );
               }).toList(),
             );
@@ -244,6 +347,59 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildRecentDiaryEntries(BuildContext context, HomeController controller) {
+    return Obx(() {
+      if (controller.recentDiaryEntries.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return CustomCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'آخر اليوميات',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Get.toNamed(RoutesConfig.diary),
+                  child: const Text('عرض الكل'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...controller.recentDiaryEntries.map((entry) {
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.book, color: Colors.blue),
+                title: Text(
+                  entry.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  Helpers.formatDate(entry.createdAt),
+                  style: const TextStyle(fontSize: 12),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => Get.toNamed(
+                  RoutesConfig.diaryDetail,
+                  arguments: entry,
+                ),
+              );
+            }),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildRecentMoods(BuildContext context, HomeController controller) {
@@ -270,7 +426,21 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 16),
           Obx(() {
             if (controller.recentMoods.isEmpty) {
-              return const Text('لم تسجل أي مزاج بعد');
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Icon(Icons.mood, size: 48, color: Colors.grey[400]),
+                      const SizedBox(height: 8),
+                      Text(
+                        'لم تسجل أي مزاج بعد',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             }
 
             return SizedBox(
@@ -291,8 +461,17 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
+                          mood.moodLevel.toString(),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
                           Helpers.formatDate(mood.timestamp),
                           style: const TextStyle(fontSize: 10),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
@@ -307,16 +486,33 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _showMoodDialog(BuildContext context, HomeController controller) {
-    int selectedMood = 5;
+    int selectedMood = controller.todayMood.value > 0 ? controller.todayMood.value : 5;
+    final noteController = TextEditingController();
 
     Get.dialog(
       AlertDialog(
         title: const Text('كيف تشعر؟'),
-        content: MoodSlider(
-          initialValue: selectedMood,
-          onChanged: (value) {
-            selectedMood = value;
-          },
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              MoodSlider(
+                initialValue: selectedMood,
+                onChanged: (value) {
+                  selectedMood = value;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: noteController,
+                decoration: const InputDecoration(
+                  labelText: 'ملاحظة (اختياري)',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -324,8 +520,11 @@ class HomeScreen extends StatelessWidget {
             child: const Text('إلغاء'),
           ),
           ElevatedButton(
-            onPressed: () {
-              controller.addMood(selectedMood, null);
+            onPressed: () async {
+              await controller.addMood(
+                selectedMood,
+                noteController.text.isEmpty ? null : noteController.text,
+              );
               Get.back();
               Helpers.showSuccessSnackbar('تم تسجيل مزاجك');
             },

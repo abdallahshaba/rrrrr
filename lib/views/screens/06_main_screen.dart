@@ -67,7 +67,7 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
       floatingActionButton: const SOSButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

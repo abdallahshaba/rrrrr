@@ -12,7 +12,7 @@ class SOSButton extends StatelessWidget {
       backgroundColor: Colors.red,
       icon: const Icon(Icons.warning, color: Colors.white),
       label: const Text(
-        'SOS',
+        'طوارئ',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
