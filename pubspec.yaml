@@ -1,0 +1,41 @@
+name: dbt_mental_health_app
+description: A comprehensive DBT-based mental health application
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  get: ^4.6.6
+  sqflite: ^2.3.0
+  path_provider: ^2.1.1
+  shared_preferences: ^2.2.2
+  cupertino_icons: ^1.0.6
+  fl_chart: ^0.65.0
+  pdf: ^3.10.7
+  printing: ^5.11.1
+  intl: ^0.18.1
+  table_calendar: ^3.0.9
+  font_awesome_flutter: ^10.6.0
+  http: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+fonts:
+  - family: Cairo
+    fonts:
+      - asset: assets/fonts/Cairo-Regular.ttf
+      - asset: assets/fonts/Cairo-Bold.ttf
+        weight: 700
+      - asset: assets/fonts/Cairo-Light.ttf
+        weight: 300
