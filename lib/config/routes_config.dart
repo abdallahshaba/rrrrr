@@ -30,6 +30,7 @@ import 'package:dbt_mental_health_app/views/screens/32_settings_screen.dart';
 import 'package:dbt_mental_health_app/views/screens/33_notifications_screen.dart';
 import 'package:dbt_mental_health_app/views/screens/34_theme_screen.dart';
 import 'package:dbt_mental_health_app/views/screens/35_about_screen.dart';
+import 'package:dbt_mental_health_app/views/screens/pdf_viewer_screen.dart';
 import 'package:dbt_mental_health_app/views/screens/sleep_tracker_screen.dart';
 import 'package:get/get.dart';
 
@@ -55,6 +56,7 @@ class RoutesConfig {
   static const String forgotPassword = '/forgot-password';
   
   // Main Routes
+  static const String pdfViewer = '/pdf-viewer';
   static const String main = '/main';
   static const String home = '/home';
   static const String dashboard = '/dashboard';
@@ -121,6 +123,8 @@ class RoutesConfig {
     GetPage(name: main, page: () => const MainScreen()),
     GetPage(name: home, page: () => const HomeScreen()),
     GetPage(name: dashboard, page: () => const DashboardScreen()),
+    GetPage(name: pdfViewer, page: () => const PdfViewerScreen()),
+
     
     // Diary
     GetPage(name: diary, page: () => const DiaryScreen()),

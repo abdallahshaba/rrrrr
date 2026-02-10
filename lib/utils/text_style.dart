@@ -89,3 +89,7 @@ static  TextStyle regulartextStyle14 = const TextStyle(
     fontSize: 26 , fontWeight: FontWeight.normal
   );
 }
+
+class PdfColor {
+  static Color pdfColor = Colors.white;
+}

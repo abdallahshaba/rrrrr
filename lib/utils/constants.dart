@@ -108,8 +108,8 @@ class AppConstants {
   static const List<String> dbtSkills = [
     'اليقظة الذهنية (Mindfulness)',
     'تحمل الضيق (Distress Tolerance)',
-    'تنظيم العواطف (Emotion Regulation)',
-    'الفعالية الشخصية (Interpersonal Effectiveness)',
+    'تنظيم المشاعر (Emotion Regulation)',
+    ' العلاقة بفاعلية (Interactive relationship)',
     'تمارين التنفس',
     ' grounding (الارتباط باللحظة الحالية)',
     'التحقق من الحقائق',
@@ -122,7 +122,7 @@ class AppConstants {
   static const Map<String, IconData> skillIcons = {
     'اليقظة الذهنية (Mindfulness)': Icons.self_improvement,
     'تحمل الضيق (Distress Tolerance)': Icons.shield,
-    'تنظيم العواطف (Emotion Regulation)': Icons.favorite,
+    ' تنظيم المشاعر  (Emotion Regulation)': Icons.favorite,
     'الفعالية الشخصية (Interpersonal Effectiveness)': Icons.people,
     'تمارين التنفس': Icons.air,
     'grounding (الارتباط باللحظة الحالية)': Icons.location_on,

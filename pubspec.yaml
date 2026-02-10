@@ -12,7 +12,6 @@ dependencies:
   
   get: ^4.6.6
   sqflite: ^2.3.0
-  path_provider: ^2.1.1
   shared_preferences: ^2.2.2
   cupertino_icons: ^1.0.6
   fl_chart: ^0.65.0
@@ -22,6 +21,8 @@ dependencies:
   table_calendar: ^3.0.9
   font_awesome_flutter: ^10.6.0
   http: ^1.1.2
+  flutter_pdfview: ^1.3.2  # لعرض PDF داخل التطبيق
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

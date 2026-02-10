@@ -3,6 +3,7 @@ import '../models/mood_model.dart';
 import '../services/database_service.dart';
 import '../services/pdf_service.dart';
 import 'auth_controller.dart';
+import 'dart:io';
 
 class ReportsController extends GetxController {
   final DatabaseService _db = Get.find<DatabaseService>();
@@ -11,6 +12,7 @@ class ReportsController extends GetxController {
   
   final RxList<MoodModel> weeklyMoods = <MoodModel>[].obs;
   final RxBool isLoading = false.obs;
+  final Rx<File?> generatedPdfFile = Rx<File?>(null);
 
   @override
   void onInit() {
@@ -36,25 +38,49 @@ class ReportsController extends GetxController {
     isLoading.value = false;
   }
 
-  Future<void> exportReport() async {
-    final userName = _auth.currentUser.value?.name ?? 'User';
+  Future<File?> generateReport() async {
+    final userName = _auth.currentUser.value?.name ?? 'المستخدم';
     final endDate = DateTime.now();
     final startDate = endDate.subtract(const Duration(days: 30));
     
-    final moodData = weeklyMoods.map((mood) => {
-      'date': mood.timestamp.toString().split(' ')[0],
-      'level': mood.moodLevel,
-      'note': mood.note,
-    }).toList();
+    final userId = _auth.currentUser.value?.id;
+    if (userId == null) return null;
+    
+    final moods = await _db.query(
+      'moods',
+      where: 'user_id = ? AND timestamp >= ? AND timestamp <= ?',
+      whereArgs: [
+        userId,
+        startDate.toIso8601String(),
+        endDate.toIso8601String(),
+      ],
+      orderBy: 'timestamp DESC',
+    );
+    
+    final moodList = moods.map((m) => MoodModel.fromMap(m)).toList();
+    
+    if (moodList.isEmpty) return null;
+    
+    final averageMood = moodList.fold<int>(0, (sum, mood) => sum + mood.moodLevel) / moodList.length;
     
     final pdfFile = await _pdfService.generateMoodReport(
       userName: userName,
       startDate: startDate,
       endDate: endDate,
-      moodData: moodData,
+      moodDataa: moodList,
+      averageMood: averageMood,
+      totalEntries: moodList.length, moodData: [],
     );
     
-    await _pdfService.sharePdf(pdfFile);
+    generatedPdfFile.value = pdfFile;
+    return pdfFile;
+  }
+
+  Future<void> exportReport() async {
+    final file = await generateReport();
+    if (file != null) {
+      await _pdfService.sharePdf(file);
+    }
   }
 
   double get averageMood {

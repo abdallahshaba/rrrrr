@@ -13,6 +13,7 @@ class AddDiaryScreen extends StatefulWidget {
 }
 
 class _AddDiaryScreenState extends State<AddDiaryScreen> {
+  
   // ✅ تعريف جميع المتحكمات هنا في كلاس الحالة
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
@@ -33,7 +34,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   List<String> _selectedSkills = [];
   int? _sleepHours;
 
-  final DiaryController _diaryController = Get.find<DiaryController>();
+  final DiaryController _diaryController = Get.put(DiaryController());
 
   @override
   void initState() {

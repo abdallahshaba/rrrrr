@@ -54,8 +54,8 @@ class AppConfig {
   static const List<String> skillsCategories = [
     'اليقظة الذهنية',
     'تحمل الضيق',
-    'تنظيم العواطف',
-    'الفعالية الشخصية',
+    'تنظيم المشاعر',
+    'العلاقة بفاعلية',
   ];
   
   // Emergency Contacts
