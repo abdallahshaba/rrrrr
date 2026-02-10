@@ -1,3 +1,4 @@
+import 'package:dbt_mental_health_app/config/routes_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/constants.dart';
@@ -52,38 +53,206 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     super.dispose();
   }
 
-  Future<void> _saveDiary() async {
-    // ✅ التحقق من الحد الأدنى (العنوان مطلوب)
-    if (_titleController.text.trim().isEmpty) {
-      Helpers.showErrorSnackbar('العنوان مطلوب');
-      return;
-    }
+Future<void> _saveDiary() async {
+  // ✅ التحقق من الحد الأدنى (العنوان مطلوب)
+  if (_titleController.text.trim().isEmpty) {
+    Helpers.showErrorSnackbar('العنوان مطلوب');
+    return;
+  }
 
     // ✅ حفظ البيانات باستخدام الدالة الصحيحة التي تحفظ جميع الحقول
-    await _diaryController.addDiaryEntry(
-      title: _titleController.text.trim(),
-      content: _contentController.text.trim(),
-      moodLevel: _selectedMoodLevel,
-      tags: _selectedTags.isNotEmpty ? _selectedTags : null,
-      sadnessLevel: _sadnessLevel > 0 ? _sadnessLevel.toInt() : null,
-      anxietyLevel: _anxietyLevel > 0 ? _anxietyLevel.toInt() : null,
-      angerLevel: _angerLevel > 0 ? _angerLevel.toInt() : null,
-      shameLevel: _shameLevel > 0 ? _shameLevel.toInt() : null,
-      selfHarmUrge: _selfHarmUrge > 0 ? _selfHarmUrge.toInt() : null,
-      suicidalUrge: _suicidalUrge > 0 ? _suicidalUrge.toInt() : null,
-      calmnessLevel: _calmnessLevel > 0 ? _calmnessLevel.toInt() : null,
-      negativeBehaviors: _selectedNegativeBehaviors.isNotEmpty 
-          ? _selectedNegativeBehaviors 
-          : null,
-      positiveBehaviors: _selectedPositiveBehaviors.isNotEmpty 
-          ? _selectedPositiveBehaviors 
-          : null,
-      skillsUsed: _selectedSkills.isNotEmpty ? _selectedSkills : null,
-      sleepHours: _sleepHours,
-      notes: _notesController.text.trim().isNotEmpty 
-          ? _notesController.text.trim() 
-          : null,
-    );
+  await _diaryController.addDiaryEntry(
+    title: _titleController.text.trim(),
+    content: _contentController.text.trim(),
+    moodLevel: _selectedMoodLevel,
+    tags: _selectedTags.isNotEmpty ? _selectedTags : null,
+    sadnessLevel: _sadnessLevel > 0 ? _sadnessLevel.toInt() : null,
+    anxietyLevel: _anxietyLevel > 0 ? _anxietyLevel.toInt() : null,
+    angerLevel: _angerLevel > 0 ? _angerLevel.toInt() : null,
+    shameLevel: _shameLevel > 0 ? _shameLevel.toInt() : null,
+    selfHarmUrge: _selfHarmUrge > 0 ? _selfHarmUrge.toInt() : null,
+    suicidalUrge: _suicidalUrge > 0 ? _suicidalUrge.toInt() : null,
+    calmnessLevel: _calmnessLevel > 0 ? _calmnessLevel.toInt() : null,
+    negativeBehaviors: _selectedNegativeBehaviors.isNotEmpty 
+        ? _selectedNegativeBehaviors 
+        : null,
+    positiveBehaviors: _selectedPositiveBehaviors.isNotEmpty 
+        ? _selectedPositiveBehaviors 
+        : null,
+    skillsUsed: _selectedSkills.isNotEmpty ? _selectedSkills : null,
+    sleepHours: _sleepHours,
+    notes: _notesController.text.trim().isNotEmpty 
+        ? _notesController.text.trim() 
+        : null,
+  );
+
+
+
+// ========== تنبيه الأزمات (حساس وداعم) ==========
+Future<void> _showCrisisAlert(BuildContext context) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: false, // منع الإغلاق العرضي
+    builder: (context) => Directionality(
+      textDirection: TextDirection.rtl,
+      child: AlertDialog(
+        backgroundColor: const Color(0xFFFFF8F8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        contentPadding: const EdgeInsets.all(24),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // أيقونة تنبيه لطيفة
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFE5E5),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.heart_broken, size: 40, color: Color(0xFFBF616A)),
+            ),
+            const SizedBox(height: 20),
+            
+            // رسالة داعمة (ليست مخيفة)
+            const Text(
+              'نلاحظ أنك تمر بلحظة صعبة جداً 💙',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'أنت لست وحدك. نوصيك بشدة بزيارة مركز الطوارئ الآن للحصول على دعم فوري وآمن.',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 16,
+                height: 1.5,
+                color: Colors.grey[800],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            
+            // زر تأكيد بلون مهدئ
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFBF616A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'أتفهم - أذهب للدعم الآن',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    final isHighRisk = _selfHarmUrge > 6 || _suicidalUrge > 6;
+      if (isHighRisk) {
+    await _showCrisisAlert(context);
+    
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      Get.offNamed(RoutesConfig.sos);
+    });
+  } else {
+    Helpers.showSuccessSnackbar('تم حفظ اليومية بنجاح');
+    Get.back();
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Helpers.showSuccessSnackbar('تم حفظ اليومية بنجاح');
     Get.back();

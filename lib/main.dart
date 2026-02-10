@@ -41,14 +41,12 @@ class DBTMentalHealthApp extends StatelessWidget {
       initialRoute: RoutesConfig.splash,
       getPages: RoutesConfig.routes,
       
-      // ✨ الحل السحري: تطبيق الخط والاتجاه العربي على كامل التطبيق في خطوة واحدة
       builder: (context, child) {
         return Directionality(
-          textDirection: TextDirection.rtl, // دعم كامل للعربية (يمين لليسار)
+          textDirection: TextDirection.rtl, 
           child: DefaultTextStyle.merge(
-            style: TextStyle(
-              fontFamily: 'Cairo', // اسم الخط المُعرّف في pubspec.yaml
-              // ⚠️ لا تحدد لون أو حجم هنا — دع الثيم يتحكم فيهما تلقائياً
+            style: const TextStyle(
+              fontFamily: 'Cairo', 
             ),
             child: child!,
           ),
