@@ -90,6 +90,52 @@ class DiaryController extends GetxController {
     await loadEntries();
   }
 
+  Future<void> addDiaryEntry({
+  required String title,
+  required String content,
+  int? moodLevel,
+  List<String>? tags,
+  int? sadnessLevel,
+  int? anxietyLevel,
+  int? angerLevel,
+  int? shameLevel,
+  int? selfHarmUrge,
+  int? suicidalUrge,
+  int? calmnessLevel,
+  List<String>? negativeBehaviors,
+  List<String>? positiveBehaviors,
+  List<String>? skillsUsed,
+  int? sleepHours,
+  String? notes,
+}) async {
+  final userId = _auth.currentUser.value?.id;
+  if (userId == null) return;
+  
+  final entry = DiaryEntryModel(
+    userId: userId,
+    title: title,
+    content: content,
+    moodLevel: moodLevel,
+    createdAt: DateTime.now(),
+    tags: tags,
+    sadnessLevel: sadnessLevel,
+    anxietyLevel: anxietyLevel,
+    angerLevel: angerLevel,
+    shameLevel: shameLevel,
+    selfHarmUrge: selfHarmUrge,
+    suicidalUrge: suicidalUrge,
+    calmnessLevel: calmnessLevel,
+    negativeBehaviors: negativeBehaviors,
+    positiveBehaviors: positiveBehaviors,
+    skillsUsed: skillsUsed,
+    sleepHours: sleepHours,
+    notes: notes,
+  );
+  
+  await _db.insert('diary_entries', entry.toMap());
+  await loadEntries();
+}
+
   List<DiaryEntryModel> searchEntries(String query) {
     if (query.isEmpty) return entries;
     

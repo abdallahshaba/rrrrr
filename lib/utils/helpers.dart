@@ -47,6 +47,25 @@ class Helpers {
       duration: const Duration(seconds: 3),
     );
   }
+
+    static String formatShortDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final targetDate = DateTime(date.year, date.month, date.day);
+    final difference = today.difference(targetDate).inDays;
+    
+    if (difference == 0) {
+      return 'اليوم';
+    } else if (difference == 1) {
+      return 'أمس';
+    } else if (difference < 7) {
+      // أيام الأسبوع للأسابيع الماضية
+      final days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      return days[date.weekday % 7];
+    } else {
+      return DateFormat('dd/MM', 'ar_SA').format(date);
+    }
+  }
   
   static void showErrorSnackbar(String message) {
     Get.snackbar(

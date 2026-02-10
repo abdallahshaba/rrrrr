@@ -8,7 +8,7 @@ class AppConfig {
   
   // Database
   static const String databaseName = 'dbt_wellness.db';
-  static const int databaseVersion = 1;
+  static const int databaseVersion = 2;
   
   // Storage Keys
   static const String keyThemeMode = 'theme_mode';

@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -23,7 +22,6 @@ void main() async {
 Future<void> initializeServices() async {
   await Get.putAsync(() => StorageService().init());
   await Get.putAsync(() => DatabaseService().init());
-  //await Get.putAsync(() => NotificationService().init());
   Get.put(ThemeController());
 }
 
@@ -42,6 +40,20 @@ class DBTMentalHealthApp extends StatelessWidget {
       themeMode: themeController.themeMode.value,
       initialRoute: RoutesConfig.splash,
       getPages: RoutesConfig.routes,
+      
+      // ✨ الحل السحري: تطبيق الخط والاتجاه العربي على كامل التطبيق في خطوة واحدة
+      builder: (context, child) {
+        return Directionality(
+          textDirection: TextDirection.rtl, // دعم كامل للعربية (يمين لليسار)
+          child: DefaultTextStyle.merge(
+            style: TextStyle(
+              fontFamily: 'Cairo', // اسم الخط المُعرّف في pubspec.yaml
+              // ⚠️ لا تحدد لون أو حجم هنا — دع الثيم يتحكم فيهما تلقائياً
+            ),
+            child: child!,
+          ),
+        );
+      },
     ));
   }
 }

@@ -24,7 +24,7 @@ class DatabaseService extends GetxService {
     );
   }
 
-  Future<void> _onCreate(Database db, int version) async {
+Future<void> _onCreate(Database db, int version) async {
     // Users Table
     await db.execute('''
       CREATE TABLE users (
@@ -52,7 +52,7 @@ class DatabaseService extends GetxService {
       )
     ''');
 
-    // Diary Entries Table
+    // Diary Entries Table - النسخة الكاملة فقط
     await db.execute('''
       CREATE TABLE diary_entries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,6 +63,18 @@ class DatabaseService extends GetxService {
         created_at TEXT NOT NULL,
         updated_at TEXT,
         tags TEXT,
+        sadness_level INTEGER,
+        anxiety_level INTEGER,
+        anger_level INTEGER,
+        shame_level INTEGER,
+        self_harm_urge INTEGER,
+        suicidal_urge INTEGER,
+        calmness_level INTEGER,
+        negative_behaviors TEXT,
+        positive_behaviors TEXT,
+        skills_used TEXT,
+        sleep_hours INTEGER,
+        notes TEXT,
         FOREIGN KEY (user_id) REFERENCES users (id)
       )
     ''');
@@ -186,8 +198,23 @@ class DatabaseService extends GetxService {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database upgrades
+    if (oldVersion < 2) {
+      // إضافة الأعمدة الجديدة لجدول diary_entries
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN sadness_level INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN anxiety_level INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN anger_level INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN shame_level INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN self_harm_urge INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN suicidal_urge INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN calmness_level INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN negative_behaviors TEXT');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN positive_behaviors TEXT');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN skills_used TEXT');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN sleep_hours INTEGER');
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN notes TEXT');
+    }
   }
+
 
   // Generic CRUD Operations
   Future<int> insert(String table, Map<String, dynamic> data) async {
